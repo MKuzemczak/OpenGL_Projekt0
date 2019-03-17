@@ -1,8 +1,8 @@
 #pragma once
 
 #define GLEW_STATIC
-#include <glew.h>
-#include <glfw3.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 class Window
 {

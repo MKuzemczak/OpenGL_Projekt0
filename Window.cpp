@@ -37,6 +37,8 @@ int Window::init(int w, int h, const char * name)
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+
+	return 0;
 }
 
 int Window::height()
