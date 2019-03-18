@@ -4,10 +4,10 @@ HPATH=./
 SRCPATH=./
 OBJPATH=./
 
-__start__: program
-	./program
+__start__: program.out
+	./program.out
 
-program: $(OBJPATH)main.o $(OBJPATH)Window.o
+program.out: $(OBJPATH)main.o $(OBJPATH)Window.o
 	$(CC) -o $@ $^ -lGLEW -lglfw -lGL
 
 $(OBJPATH)main.o: $(SRCPATH)main.cpp $(HPATH)Window.h
@@ -20,3 +20,4 @@ $(OBJPATH)Window.o: $(SRCPATH)Window.cpp $(HPATH)Window.h
 
 clean:
 	rm -f $(OBJPATH)*.o
+	rm program.out
