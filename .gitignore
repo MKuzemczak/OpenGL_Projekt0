@@ -334,3 +334,7 @@ ASALocalRun/
 
 # custom
 x64/
+
+# tmp program files
+*.vertexshader
+*.fragmentshader
