@@ -1,19 +1,21 @@
 #pragma once
 
+#include "Circ.h"
 #include "Rect.h"
 
-class Curve
+class Curve : Triangles
 {
-	std::vector<Rect> rects;
 	std::vector<glm::vec2> points;
-	
+	Circ *startCirc;
+	Circ *endCirc;
+	double width;
 
 public:
-	Curve();
+	Curve(double w = 0.01);
 	~Curve();
 
 	void draw();
-	void addPoint(glm::vec2 & pt);
+	void addPoint(glm::vec2 pt);
 	glm::vec2 & getPoint(int index);
 	const glm::vec2 & getPoint(int index) const;
 

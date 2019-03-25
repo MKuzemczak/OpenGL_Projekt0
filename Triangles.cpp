@@ -12,11 +12,12 @@ Triangles::Triangles()
 
 Triangles::~Triangles()
 {
-	if(vertices.size() == colors.size())
+	if (vertices.size() == colors.size())
 		glDeleteBuffers(1, &colorBuffer);
 	glDeleteBuffers(1, &vertexBuffer);
-	glDeleteVertexArrays(1, &VertexArrayID);
 	glDeleteProgram(programID);
+	remove(vertexShaderFileName.c_str());
+	remove(fragmentShaderFileName.c_str());
 }
 
 void Triangles::generateShaders()
@@ -146,13 +147,13 @@ void Triangles::move(glm::vec3 vec)
 
 void Triangles::setLocation(glm::vec2 point)
 {
-	transformationMatrix[3][0] += point[0];
-	transformationMatrix[3][1] += point[1];
+	transformationMatrix[3][0] = point[0];
+	transformationMatrix[3][1] = point[1];
 }
 
 void Triangles::setLocation(glm::vec3 point)
 {
-	transformationMatrix[3][0] += point[0];
-	transformationMatrix[3][1] += point[1];
-	transformationMatrix[3][2] += point[2];
+	transformationMatrix[3][0] = point[0];
+	transformationMatrix[3][1] = point[1];
+	transformationMatrix[3][2] = point[2];
 }

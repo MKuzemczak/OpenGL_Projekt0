@@ -1,6 +1,7 @@
 #include "DrawableObject.h"
 
 unsigned int DrawableObject::objectCntr = 0;
+unsigned int DrawableObject::everCreatedObjectCntr = 0;
 GLuint DrawableObject::VertexArrayID;
 
 DrawableObject::DrawableObject()
@@ -12,7 +13,8 @@ DrawableObject::DrawableObject()
 	}
 
 	objectCntr++;
-	objectNumber = objectCntr;
+	everCreatedObjectCntr++;
+	objectNumber = everCreatedObjectCntr;
 
 	drawingMode = GL_POINTS;
 }
@@ -20,6 +22,10 @@ DrawableObject::DrawableObject()
 
 DrawableObject::~DrawableObject()
 {
+	if (objectCntr == 1)
+	{
+		glDeleteVertexArrays(1, &VertexArrayID);
+	}
 	objectCntr--;
 }
 

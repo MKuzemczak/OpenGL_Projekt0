@@ -3,7 +3,6 @@
 class Circ : public Triangles
 {
 	GLfloat radius;
-	glm::vec2 location;
 
 public:
 	Circ(GLfloat rad, glm::vec2 loc);

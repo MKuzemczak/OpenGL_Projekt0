@@ -118,6 +118,9 @@ Rect::Rect(GLfloat w, GLfloat h, GLfloat locx, GLfloat locy, GLfloat rot)
 		break;
 	}
 
+	for (float f : vertices)
+		std::cout << f << std::endl;
+
 	width = w;
 	height = h;
 	setLocation(glm::vec2(locx, locy));

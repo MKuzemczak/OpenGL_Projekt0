@@ -10,11 +10,15 @@
 
 #include "shader.hpp"
 
+#define PI 3.14159265359
+#define DEG_TO_RAD PI/180
+
 class DrawableObject
 {
 protected:
 	static GLuint VertexArrayID;
 	static unsigned int objectCntr;
+	static unsigned int everCreatedObjectCntr;
 
 	std::vector<unsigned int> indices;
 	std::vector<GLfloat> vertices,
