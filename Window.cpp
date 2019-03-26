@@ -36,6 +36,7 @@ int Window::init(int w, int h, const char * name)
 		glfwTerminate();
 		return -1;
 	}
+	glewInit();
 	glfwMakeContextCurrent(window);
 
 	return 0;

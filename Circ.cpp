@@ -16,8 +16,9 @@ Circ::Circ(GLfloat rad, glm::vec2 loc)
 	else
 		div = 2 + 1 / (11.2 * rad);
 
-	std::cout << div << std::endl;
-
+	
+	
+	
 	for (int i = 360; i >= 0; i-=div)
 	{
 		vertices.push_back(rad*cos(DEG_TO_RAD*i));

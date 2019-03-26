@@ -8,6 +8,7 @@ Curve::Curve(double w)
 	startCirc = NULL;
 	endCirc = NULL;
 	drawingMode = GL_TRIANGLE_STRIP;
+	generateShaders();
 }
 
 
@@ -24,7 +25,6 @@ void Curve::draw()
 		startCirc->draw();
 	if (endCirc != NULL)
 		endCirc->draw();
-
 	Triangles::draw();
 }
 
@@ -51,7 +51,7 @@ void Curve::addPoint(glm::vec2 pt)
 				angle = PI + angle;*/
 			if (angle < 0)
 				angle = 2 * PI + angle;
-			std::cout << "angle: " << angle << std::endl;
+			//std::cout << "angle: " << angle << std::endl;
 			double length(sqrt(dy*dy + dx * dx));
 			
 			glm::mat2 rotation;
@@ -60,24 +60,24 @@ void Curve::addPoint(glm::vec2 pt)
 			rotation[0][1] = sin(angle);
 			rotation[1][1] = rotation[0][0];
 
-			std::cout << "cos: " << cos(angle) << ", sin: " << sin(angle) << std::endl;
-			std::cout << "rotation:\n"
+			//std::cout << "cos: " << cos(angle) << ", sin: " << sin(angle) << std::endl;
+			/*std::cout << "rotation:\n"
 				<< rotation[0][0] << ", "
 				<< rotation[1][0] << std::endl
 				<< rotation[0][1] << ", "
-				<< rotation[1][1] << std::endl;
+				<< rotation[1][1] << std::endl;*/
 
 			glm::vec2 v;
 			//if (points.size() == 1)
 			//{
-			std::cout << "vectors:\n";
+			//std::cout << "vectors:\n";
 				v[0] = 0.0f;
 				v[1] =  width/2;
 				v = rotation * v;
-				std::cout << v[0] << ", " << v[1] << std::endl;
+				//std::cout << v[0] << ", " << v[1] << std::endl;
 				v[0] += points[points.size() - 2][0];
 				v[1] += points[points.size() - 2][1];
-				std::cout << v[0] << ", " << v[1] << std::endl;
+				//std::cout << v[0] << ", " << v[1] << std::endl;
 				vertices.push_back(v[0]);
 				vertices.push_back(v[1]);
 				vertices.push_back(0.0f);
@@ -86,7 +86,7 @@ void Curve::addPoint(glm::vec2 pt)
 				v = rotation * v;
 				v[0] += points[points.size() - 2][0];
 				v[1] += points[points.size() - 2][1];
-				std::cout << v[0] << ", " << v[1] << std::endl;
+				//std::cout << v[0] << ", " << v[1] << std::endl;
 				vertices.push_back(v[0]);
 				vertices.push_back(v[1]);
 				vertices.push_back(0.0f);
@@ -94,24 +94,38 @@ void Curve::addPoint(glm::vec2 pt)
 			v[0] = 0.0f;
 			v[1] = width / 2;
 			v = rotation * v;
-			std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
+			//std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
 			vertices.push_back(v[0] + pt[0]);
 			vertices.push_back(v[1] + pt[1]);
 			vertices.push_back(0.0f);
 			v[0] = 0.0f;
 			v[1] = -width / 2;
 			v = rotation * v;
-			std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
+			//std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
 			vertices.push_back(v[0] + pt[0]);
 			vertices.push_back(v[1] + pt[1]);
 			vertices.push_back(0.0f);
 
-			
+			newVertices = true;
+			//std::cout << vertices.size() << std::endl;
 
-			glDeleteBuffers(1, &vertexBuffer);
+			/*glDeleteBuffers(1, &vertexBuffer);
 			glGenBuffers(1, &vertexBuffer);
-			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);*/
+			//glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), 0);
+			//glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_DYNAMIC_DRAW);
+			/*float *tab = new float[vertices.size()];
+			glGetBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size(), tab);
+			std::cout << "vertices data:\n";
+			for(int i = 0; i < vertices.size()/3; i++)
+				std::cout << vertices[i * 3 + 0] << ", " << vertices[i * 3 + 0] << ", " << vertices[i * 3 + 0] << std::endl;
+			std::cout << "buffer data:\n";
+			for (int i = 0; i < vertices.size()/3; i++)
+			{
+				std::cout << tab[i * 3 + 0] << ", " << tab[i * 3 + 0] << ", " << tab[i * 3 + 0] << std::endl;
+			}*/
+			//glGetBufferData
+			//glBufferData()
 		}
 	}
 }

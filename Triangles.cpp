@@ -7,6 +7,7 @@
 Triangles::Triangles()
 {
 	transformationMatrix = glm::mat4(1.0f);
+	newVertices = false;
 }
 
 
@@ -16,8 +17,6 @@ Triangles::~Triangles()
 		glDeleteBuffers(1, &colorBuffer);
 	glDeleteBuffers(1, &vertexBuffer);
 	glDeleteProgram(programID);
-	remove(vertexShaderFileName.c_str());
-	remove(fragmentShaderFileName.c_str());
 }
 
 void Triangles::generateShaders()
@@ -35,48 +34,51 @@ void Triangles::generateShaders()
 		<< std::endl
 		<< std::endl
 		<< "layout(location = 0) in vec3 vertexPosition_modelspace;" << std::endl;
-	if (vertices.size() == colors.size())
+	/*if (vertices.size() == colors.size())
 	{
 		vertexShader << "layout(location = 1) in vec3 vertexColor;" << std::endl << std::endl
 			<< "out vec3 fragmentColor;" << std::endl << std::endl;
-	}
+	}*/
 	vertexShader << "uniform mat4 transformationMatrix;" << std::endl << std::endl
 		<< "void main() {" << std::endl
 		<< "\tgl_Position =  transformationMatrix * vec4(vertexPosition_modelspace,1);" << std::endl;
-	if (vertices.size() == colors.size())
-		vertexShader << "\tfragmentColor = vertexColor;" << std::endl;
+	/*if (vertices.size() == colors.size())
+		vertexShader << "\tfragmentColor = vertexColor;" << std::endl;*/
 	vertexShader << "}";
 	vertexShader.close();
 
 	fragmentShader.open(fragmentShaderFileName);
 	fragmentShader << "#version 330 core" << std::endl << std::endl;
-	if (vertices.size() == colors.size())
+	/*if (vertices.size() == colors.size())
 	{
 		fragmentShader << "in vec3 fragmentColor;" << std::endl;
-	}
+	}*/
 	fragmentShader << "out vec3 color;" << std::endl << std::endl
 		<< "void main() {" << std::endl;
-	if (vertices.size() == colors.size())
+	/*if (vertices.size() == colors.size())
 		fragmentShader << "\tcolor = fragmentColor;" << std::endl;
-	else
+	else*/
 		fragmentShader << "\tcolor = vec3(1,0,0);" << std::endl;
 	fragmentShader << "}";
 	fragmentShader.close();
 
 	programID = LoadShaders(vertexShaderFileName.c_str(), fragmentShaderFileName.c_str());
 
+	remove(vertexShaderFileName.c_str());
+	remove(fragmentShaderFileName.c_str());
+
 	transformationMatrixID = glGetUniformLocation(programID, "transformationMatrix");
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STREAM_DRAW);
 
-	if (vertices.size() == colors.size())
+	/*if (vertices.size() == colors.size())
 	{
 		glGenBuffers(1, &colorBuffer);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
 		glBufferData(GL_ARRAY_BUFFER, colors.size() * sizeof(colors.data()), colors.data(), GL_STATIC_DRAW);
-	}
+	}*/
 }
 
 void Triangles::draw()
@@ -88,8 +90,13 @@ void Triangles::draw()
 	glUniformMatrix4fv(transformationMatrixID, 1, GL_FALSE, &transformationMatrix[0][0]);
 
 	// 1rst attribute buffer : vertices
-	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+	if (newVertices)
+	{
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STREAM_DRAW);
+		newVertices = false;
+	}
+	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
 		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
 		3,                  // size
@@ -99,7 +106,7 @@ void Triangles::draw()
 		(void*)0            // array buffer offset
 	);
 
-	if (vertices.size() == colors.size())
+	/*if (vertices.size() == colors.size())
 	{
 		// 2nd attribute buffer : colors
 		glEnableVertexAttribArray(1);
@@ -112,7 +119,7 @@ void Triangles::draw()
 			0,                                // stride
 			(void*)0                          // array buffer offset
 		);
-	}
+	}*/
 	// Draw the triangle !
 	glDrawArrays(drawingMode, 0, vertices.size() / 3);
 
