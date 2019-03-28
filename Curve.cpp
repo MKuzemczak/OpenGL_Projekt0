@@ -220,5 +220,5 @@ void Curve::generateShaders()
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(vertices.data()), 0, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(GLfloat), 0, GL_DYNAMIC_DRAW);
 }
