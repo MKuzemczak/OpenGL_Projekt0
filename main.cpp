@@ -42,13 +42,17 @@ int main()
 	
 	Circ c(0.01f, glm::vec2(-0.25f, 0.75f));
 	Circ c0(0.1f, glm::vec2(0.0f, 0.0f));
-	Curve cur(0.01);
-	cur.addPoint(glm::vec2(0.5f, 0.5f));
-	cur.addPoint(glm::vec2(0.5f, 0.3f));
-	cur.addPoint(glm::vec2(0.25f, 0.25f));
-	
+	std::vector<Curve*> curves;
+	curves.push_back(new Curve(0.1f));
+	curves[0]->addPoint(glm::vec2(0.5f, 0.0f));
+	curves[0]->addPoint(glm::vec2(0.0f, 0.5f));
+	curves[0]->addPoint(glm::vec2(-0.5f, 0.0f));
+	curves[0]->addPoint(glm::vec2(0.0f, -0.5f));
+	curves[0]->addPoint(glm::vec2(0.5f, 0.0f));
 
 	float rot = 0.0;
+
+	bool lastMouse = false;
 
 	do {
 		window->clear();
@@ -58,16 +62,26 @@ int main()
 		c.draw();
 		//c0.draw();
 		s0.rotate(rot);
-		if (glfwGetMouseButton(window->getGLFWWindowPtr(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		if (window->isMousePressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
+			if (!lastMouse)
+			{
+				lastMouse = true;
+
+				curves.push_back(new Curve(0.1f));
+			}
+
 			double xpos, ypos;
 			glfwGetCursorPos(window->getGLFWWindowPtr(), &xpos, &ypos);
 			xpos = (2 * xpos / window->width()) - 1;
 			ypos = (2 * (window->height() - ypos) / window->height()) - 1;
-			cur.addPoint(glm::vec2(xpos, ypos));
+			curves[curves.size() - 1]->addPoint(glm::vec2(xpos, ypos));
 		}
+		else
+			lastMouse = false;
 
-		cur.draw();
+		for(Curve * c : curves)
+			c->draw();
 
 		//s.draw();
 		s0.draw();

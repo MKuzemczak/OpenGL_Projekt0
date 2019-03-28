@@ -6,7 +6,7 @@ protected:
 	glm::mat4 transformationMatrix;
 	GLuint transformationMatrixID;
 
-	bool newVertices;
+	int newVertices, newLastPoint;
 
 public:
 	Triangles();

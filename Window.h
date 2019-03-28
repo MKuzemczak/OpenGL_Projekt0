@@ -28,6 +28,7 @@ public:
 	void clear();
 	void swapBuffers();
 	bool isPressed(int key);
+	bool isMousePressed(int key);
 	bool shouldClose();
 
 	void close();

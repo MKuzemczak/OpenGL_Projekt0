@@ -9,6 +9,7 @@
 #include <glm\glm.hpp>
 
 #include "shader.hpp"
+#include "vectorUtils.h"
 
 #define PI 3.14159265359
 #define DEG_TO_RAD PI/180
@@ -28,6 +29,7 @@ protected:
 		fragmentShaderFileName;
 	int objectNumber;
 	GLuint programID, vertexBuffer, colorBuffer;
+	unsigned int vertexBufferSize;
 
 	int drawingMode;
 

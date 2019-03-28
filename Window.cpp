@@ -38,6 +38,7 @@ int Window::init(int w, int h, const char * name)
 	}
 	glewInit();
 	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
 
 	return 0;
 }
@@ -118,6 +119,15 @@ bool Window::isPressed(int key)
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
 
+bool Window::isMousePressed(int key)
+{
+	if (glfwGetMouseButton(window, key) == GLFW_PRESS)
+	{
+		return true;
+	}
+	return false;
+}
+
 bool Window::shouldClose()
 {
 	return glfwWindowShouldClose(window) != 0;
@@ -132,3 +142,4 @@ GLFWwindow * Window::getGLFWWindowPtr()
 {
 	return window;
 }
+

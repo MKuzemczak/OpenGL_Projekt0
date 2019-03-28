@@ -7,7 +7,9 @@
 Triangles::Triangles()
 {
 	transformationMatrix = glm::mat4(1.0f);
+	vertexBufferSize = 1024;
 	newVertices = false;
+	newLastPoint = false;
 }
 
 
@@ -71,7 +73,7 @@ void Triangles::generateShaders()
 
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STREAM_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
 
 	/*if (vertices.size() == colors.size())
 	{
@@ -91,11 +93,7 @@ void Triangles::draw()
 
 	// 1rst attribute buffer : vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	if (newVertices)
-	{
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertices.data()), vertices.data(), GL_STREAM_DRAW);
-		newVertices = false;
-	}
+	
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(
 		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
