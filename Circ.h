@@ -3,10 +3,15 @@
 class Circ : public Triangles
 {
 	GLfloat radius;
+	glm::vec4 color;
 
 public:
-	Circ(GLfloat rad, glm::vec2 loc);
-	Circ(GLfloat rad, GLfloat locx, GLfloat locy);
+	
+	Circ(GLfloat rad, glm::vec2 loc, glm::vec4 clr = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)) :
+		Circ(rad, loc[0], loc[1], clr)
+	{
+	}
+	Circ(GLfloat rad, GLfloat locx, GLfloat locy, glm::vec4 clr = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
 	~Circ();
 };

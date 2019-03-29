@@ -21,7 +21,7 @@ int main()
 {
 	glEnable(GL_DEBUG_OUTPUT);
 	window = new Window();
-	window->init(800, 800, "Okno");
+	window->init(800, 600, "Okno");
 
 	// Initialize GLEW
 	if (glewInit() != GLEW_OK) {
@@ -32,18 +32,19 @@ int main()
 	}
 
 	window->enableKeyboard();
-	window->setBgcolor(0, 0, 0.4, 0);
+	window->setBgcolor(0, 0, 0.4f, 0);
 
 	Rect::setLocationMode(LEFT_CENTER);
+	DrawableObject::setAspectRatio(window->width(), window->height());
 
 	Rect s(0.5f, glm::vec2(-0.25f, 0.25f));
 	Rect s0(0.5f, 0.1f, glm::vec2(-0.25f, 0.75f));
-	s0.rotate(-PI / 2);
+	s0.rotate(-(float)PI / 2);
 	
 	Circ c(0.01f, glm::vec2(-0.25f, 0.75f));
 	Circ c0(0.1f, glm::vec2(0.0f, 0.0f));
 	std::vector<Curve*> curves;
-	curves.push_back(new Curve(0.1f));
+	curves.push_back(new Curve(0.1f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
 	curves[0]->addPoint(glm::vec2(0.5f, 0.0f));
 	curves[0]->addPoint(glm::vec2(0.0f, 0.5f));
 	curves[0]->addPoint(glm::vec2(-0.5f, 0.0f));
@@ -57,7 +58,7 @@ int main()
 	do {
 		window->clear();
 
-		rot += 0.01;
+		rot += 0.01f;
 
 		c.draw();
 		//c0.draw();
@@ -68,12 +69,12 @@ int main()
 			{
 				lastMouse = true;
 
-				curves.push_back(new Curve(0.1f));
+				curves.push_back(new Curve(0.05f));
 			}
 
 			double xpos, ypos;
 			glfwGetCursorPos(window->getGLFWWindowPtr(), &xpos, &ypos);
-			xpos = (2 * xpos / window->width()) - 1;
+			xpos = ((2 * xpos / window->width()) - 1)*window->width()/window->height();
 			ypos = (2 * (window->height() - ypos) / window->height()) - 1;
 			curves[curves.size() - 1]->addPoint(glm::vec2(xpos, ypos));
 		}

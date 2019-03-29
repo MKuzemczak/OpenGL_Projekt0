@@ -22,6 +22,8 @@ int Window::init(int w, int h, const char * name)
 		return -1;
 	}
 
+	
+	//glfwWindowHint(GLFW_DECORATED, 0); // ramka i przyciski
 	glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -38,8 +40,7 @@ int Window::init(int w, int h, const char * name)
 	}
 	glewInit();
 	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-
+	
 	return 0;
 }
 

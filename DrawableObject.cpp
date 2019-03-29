@@ -3,6 +3,8 @@
 unsigned int DrawableObject::objectCntr = 0;
 unsigned int DrawableObject::everCreatedObjectCntr = 0;
 GLuint DrawableObject::VertexArrayID;
+GLuint DrawableObject::programID = NULL;
+glm::mat4 DrawableObject::orthoMatrix = glm::mat4(1.0f);
 
 DrawableObject::DrawableObject()
 {
@@ -62,4 +64,10 @@ std::vector<GLfloat> * DrawableObject::colorsVectorPtr()
 void DrawableObject::setDrawingMode(int mode)
 {
 	drawingMode = mode;
+}
+
+void DrawableObject::setAspectRatio(GLuint w, GLuint h)
+{
+	GLfloat aspect = (float)w / h;
+	orthoMatrix = glm::ortho((float)-aspect, aspect, -1.0f, 1.0f);
 }

@@ -2,14 +2,16 @@
 
 GLuint Curve::programID = 0;
 GLuint Curve::curveCntr = 0;
+GLuint Curve::vertexColorUniformID = 0;
+GLuint Curve::orthoMatrixUniformID = 0;
 
-Curve::Curve(double w)
+Curve::Curve(float w, glm::vec4 clr)
 {
 	width = w;
-	startCirc = NULL;
-	endCirc = NULL;
-	drawingMode = GL_LINE_LOOP/*GL_TRIANGLE_STRIP*/;
+	drawingMode = GL_TRIANGLE_STRIP;
+	//drawingMode = GL_LINE_LOOP;
 	curveCntr++;
+	color = clr;
 	generateShaders();
 }
 
@@ -19,23 +21,23 @@ Curve::~Curve()
 	if (!(--curveCntr))
 		glDeleteProgram(programID);
 
-	delete startCirc;
-	delete endCirc;
+	for (Circ * c : circles)
+		delete c;
 }
 
 
 void Curve::draw()
 {
-	if (startCirc != NULL)
-		startCirc->draw();
-	if (endCirc != NULL)
-		endCirc->draw();
+	for (Circ * c : circles)
+		c->draw();
 
 	// Use our shader
 	glUseProgram(programID);
 
-	glUniformMatrix4fv(transformationMatrixID, 1, GL_FALSE, &transformationMatrix[0][0]);
-
+	glUniformMatrix4fv(orthoMatrixUniformID, 1, GL_FALSE, &orthoMatrix[0][0]);
+	glUniform4fv(vertexColorUniformID, 1, &color[0]);
+	
+	glEnableVertexAttribArray(0);
 	// 1rst attribute buffer : vertices
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		
@@ -56,15 +58,9 @@ void Curve::draw()
 
 		glFinish();
 		glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices.data()+(offset/sizeof(vertices[0])));
-
-		GLenum err;
-		while ((err = glGetError()) != GL_NO_ERROR)
-		{
-			std::cout << "glBufferSubData error: " << err << std::endl;
-		}
 		newVertices = 0;
 	}
-	glEnableVertexAttribArray(0);
+	
 	glVertexAttribPointer(
 		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
 		3,                  // size
@@ -86,86 +82,59 @@ void Curve::addPoint(glm::vec2 pt)
 	if (points.size() == 0)
 	{
 		points.push_back(pt);
-		startCirc = new Circ(width / 2, pt);
-		endCirc = new Circ(width / 2, pt);
+		circles.push_back(new Circ(width / 2, pt, color));
+		circles.push_back(new Circ(width / 2, pt, color));
 	}
 	else
 	{
-		if (glm::length(pt - points[points.size() - 1]) > 0.02)
+		if (glm::length(pt - points[points.size() - 1]) >= width)
 		{
-			
-			endCirc->setLocation(pt);
+			static float prevAngle = 0;
 
-			float dx = pt[0] - points[points.size() - 1][0];
-			float dy = pt[1] - points[points.size() - 1][1];
-			float angle = atan(dy / dx);
-			/*if (dx < 0 && dy < 0 ||
-				dx < 0 && dy > 0)
-				angle = PI + angle;*/
-			std::cout << "angle: " << angle << std::endl;
-			if (dx <= 0 && dy >= 0 ||
-				dx <= 0 && dy <= 0)
-				angle += PI;
-			std::cout << "angle: " << angle << std::endl;
-			float length = (sqrt(dy*dy + dx * dx));
-			
 			points.push_back(pt);
+			circles[1]->setLocation(pt);
+
+			float dx = pt[0] - points[points.size() - 2][0];
+			float dy = pt[1] - points[points.size() - 2][1];
+			float length = (sqrt(dy*dy + dx * dx));
+			float angle = atan(dy / dx);
+			if (dx <= 0 && dy >= 0 && angle < 0||
+				dx <= 0 && dy <= 0 && angle > 0)
+				angle += PI;
+			
+			if (abs(angle - prevAngle) > 50 * DEG_TO_RAD)
+			{
+				circles.push_back(new Circ(width / 2, points[points.size() - 2], color));
+			}
+			prevAngle = angle;
 
 			glm::mat2 rotation;
-			rotation[0][0] = cos(angle);
-			rotation[1][0] = -sin(angle);
-			rotation[0][1] = sin(angle);
+			rotation[0][0] = dx / length;
+			rotation[1][0] = -dy / length;
+			rotation[0][1] = dy / length;
 			rotation[1][1] = rotation[0][0];
 
-			std::cout << "cos: " << cos(angle) << ", sin: " << sin(angle) << std::endl;
-			/*std::cout << "rotation:\n"
-				<< rotation[0][0] << ", "
-				<< rotation[1][0] << std::endl
-				<< rotation[0][1] << ", "
-				<< rotation[1][1] << std::endl;*/
-
-			glm::vec2 v;
-			//if (points.size() == 1)
-			//{
-			//std::cout << "vectors:\n";
-			v[0] = 0.0f;
-			v[1] =  width/2;
-			v = rotation * v;
-			//std::cout << v[0] << ", " << v[1] << std::endl;
-			v[0] += points[points.size() - 2][0];
-			v[1] += points[points.size() - 2][1];
-			//std::cout << v[0] << ", " << v[1] << std::endl;
-			vertices.push_back(v[0]);
-			vertices.push_back(v[1]);
+			glm::vec2 v0, v1;
+			v0[0] = 0.0f;
+			v0[1] =  width/2;
+			v0 = rotation * v0;
+			v1[0] = 0.0f;
+			v1[1] = -width / 2;
+			v1 = rotation * v1;
+			vertices.push_back(v0[0] + points[points.size() - 2][0]);
+			vertices.push_back(v0[1] + points[points.size() - 2][1]);
 			vertices.push_back(0.0f);
-			v[0] = 0.0f;
-			v[1] = -width / 2;
-			v = rotation * v;
-			v[0] += points[points.size() - 2][0];
-			v[1] += points[points.size() - 2][1];
-			//std::cout << v[0] << ", " << v[1] << std::endl;
-			vertices.push_back(v[0]);
-			vertices.push_back(v[1]);
+			vertices.push_back(v1[0] + points[points.size() - 2][0]);
+			vertices.push_back(v1[1] + points[points.size() - 2][1]);
 			vertices.push_back(0.0f);
-			//}
-			v[0] = 0.0f;
-			v[1] = width / 2;
-			v = rotation * v;
-			//std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
-			vertices.push_back(v[0] + pt[0]);
-			vertices.push_back(v[1] + pt[1]);
+			vertices.push_back(v0[0] + pt[0]);
+			vertices.push_back(v0[1] + pt[1]);
 			vertices.push_back(0.0f);
-			v[0] = 0.0f;
-			v[1] = -width / 2;
-			v = rotation * v;
-			//std::cout << v[0] + pt[0] << ", " << v[1] + pt[1] << std::endl;
-			vertices.push_back(v[0] + pt[0]);
-			vertices.push_back(v[1] + pt[1]);
+			vertices.push_back(v1[0] + pt[0]);
+			vertices.push_back(v1[1] + pt[1]);
 			vertices.push_back(0.0f);
 
 			newVertices += 12;
-			//std::cout << vertices.size() << std::endl;
-
 		}
 	}
 }
@@ -183,41 +152,49 @@ const glm::vec2 & Curve::getPoint(int index) const
 
 void Curve::generateShaders()
 {
-	std::ofstream vertexShader, fragmentShader;
-	vertexShaderFileName.append("object");
-	vertexShaderFileName.append(std::to_string(objectNumber));
-	vertexShaderFileName.append("VertexShader.vertexshader");
-	fragmentShaderFileName.append("object");
-	fragmentShaderFileName.append(std::to_string(objectNumber));
-	fragmentShaderFileName.append("FragmentShader.fragmentshader");
+	if (curveCntr == 1)
+	{
+		std::ofstream vertexShader, fragmentShader;
+		vertexShaderFileName.append("object");
+		vertexShaderFileName.append(std::to_string(objectNumber));
+		vertexShaderFileName.append("VertexShader.vertexshader");
+		fragmentShaderFileName.append("object");
+		fragmentShaderFileName.append(std::to_string(objectNumber));
+		fragmentShaderFileName.append("FragmentShader.fragmentshader");
 
-	vertexShader.open(vertexShaderFileName);
-	vertexShader << "#version 330 core"
-		<< std::endl
-		<< std::endl
-		<< "layout(location = 0) in vec3 vertexPosition_modelspace;" << std::endl;
-	vertexShader << "uniform mat4 transformationMatrix;" << std::endl << std::endl
-		<< "void main() {" << std::endl
-		<< "\tgl_Position =  transformationMatrix * vec4(vertexPosition_modelspace,1);" << std::endl;
-	vertexShader << "}";
-	vertexShader.close();
+		vertexShader.open(vertexShaderFileName);
+		vertexShader
+			<< "#version 330 core\n\n"
+			<< "layout(location = 0) in vec3 vertexPosition_modelspace;\n"
+			<< "uniform mat4 orthoMatrix;\n"
+			<< "uniform vec4 vertexColor;\n\n"
+			<< "out vec4 fragmentColor;\n\n"
+			<< "void main() {\n"
+			<< "\tgl_Position = orthoMatrix * vec4(vertexPosition_modelspace,1);\n"
+			<< "\tfragmentColor = vertexColor;\n"
+			<< "}";
+		vertexShader.close();
 
-	fragmentShader.open(fragmentShaderFileName);
-	fragmentShader << "#version 330 core" << std::endl << std::endl;
-	fragmentShader << "out vec3 color;" << std::endl << std::endl
-		<< "void main() {" << std::endl;
-	fragmentShader << "\tcolor = vec3(1,0,0);" << std::endl;
-	fragmentShader << "}";
-	fragmentShader.close();
+		fragmentShader.open(fragmentShaderFileName);
+		fragmentShader
+			<< "#version 330 core\n\n"
+			<< "in vec4 fragmentColor;"
+			<< "out vec4 color;\n\n"
+			<< "void main() {\n"
+			<< "\tcolor = fragmentColor;"
+			<< "}";
+		fragmentShader.close();
 
-	if(curveCntr == 1)
+
 		programID = LoadShaders(vertexShaderFileName.c_str(), fragmentShaderFileName.c_str());
 
-	remove(vertexShaderFileName.c_str());
-	remove(fragmentShaderFileName.c_str());
+		remove(vertexShaderFileName.c_str());
+		remove(fragmentShaderFileName.c_str());
 
-	transformationMatrixID = glGetUniformLocation(programID, "transformationMatrix");
-
+		vertexColorUniformID = glGetUniformLocation(programID, "vertexColor");
+		orthoMatrixUniformID = glGetUniformLocation(programID, "orthoMatrix");
+	}	
+	
 	glGenBuffers(1, &vertexBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 	glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(GLfloat), 0, GL_DYNAMIC_DRAW);

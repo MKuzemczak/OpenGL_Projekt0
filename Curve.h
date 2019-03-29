@@ -7,14 +7,17 @@ class Curve : Triangles
 {
 	static GLuint programID;
 	static GLuint curveCntr;
+	static GLuint vertexColorUniformID;
+	static GLuint orthoMatrixUniformID;
 
 	std::vector<glm::vec2> points;
-	Circ *startCirc;
-	Circ *endCirc;
-	double width;
+	std::vector<Circ *> circles;
+	glm::vec4 color;
+	float width;
+
 
 public:
-	Curve(double w = 0.01);
+	Curve(float w = 0.01f, glm::vec4 clr = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 	~Curve();
 
 	void draw();

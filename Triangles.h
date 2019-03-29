@@ -3,8 +3,9 @@
 class Triangles : public DrawableObject
 {
 protected:
+	static GLuint transformationMatrixID;
+
 	glm::mat4 transformationMatrix;
-	GLuint transformationMatrixID;
 
 	int newVertices, newLastPoint;
 

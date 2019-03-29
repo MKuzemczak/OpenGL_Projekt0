@@ -7,19 +7,23 @@
 
 #include <GL\glew.h>
 #include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 #include "shader.hpp"
 #include "vectorUtils.h"
 
 #define PI 3.14159265359
+#define PIf 3.14159265359f
 #define DEG_TO_RAD PI/180
 
 class DrawableObject
 {
 protected:
 	static GLuint VertexArrayID;
+	static GLuint programID;
 	static unsigned int objectCntr;
 	static unsigned int everCreatedObjectCntr;
+	static glm::mat4 orthoMatrix;
 
 	std::vector<unsigned int> indices;
 	std::vector<GLfloat> vertices,
@@ -28,7 +32,7 @@ protected:
 	std::string vertexShaderFileName,
 		fragmentShaderFileName;
 	int objectNumber;
-	GLuint programID, vertexBuffer, colorBuffer;
+	GLuint vertexBuffer, colorBuffer;
 	unsigned int vertexBufferSize;
 
 	int drawingMode;
@@ -43,6 +47,7 @@ public:
 	void addIndex(unsigned int i);
 	void addVertix(GLfloat v);
 	void addColor(GLfloat c);
+	static void setAspectRatio(GLuint w, GLuint h);
 
 	std::vector<unsigned int> * indicesVectorPtr();
 	std::vector<GLfloat> * verticesVectorPtr();
