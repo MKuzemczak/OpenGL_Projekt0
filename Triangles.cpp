@@ -10,6 +10,7 @@ Triangles::Triangles()
 	vertexBufferSize = 1024;
 	newVertices = false;
 	newLastPoint = false;
+	newColors = false;
 }
 
 
@@ -24,7 +25,7 @@ Triangles::~Triangles()
 
 void Triangles::generateShaders()
 {
-	if (objectCntr == 1)
+	if (programID == NULL)
 	{
 		std::ofstream vertexShader, fragmentShader;
 		vertexShaderFileName.append("object");
@@ -83,7 +84,17 @@ void Triangles::draw()
 
 	glm::mat4 mvp = orthoMatrix * transformationMatrix;
 
+	//std::cout << "Triangles::draw()::mvp:\n" << mvp << std::endl;
+
 	glUniformMatrix4fv(transformationMatrixID, 1, GL_FALSE, &mvp[0][0]);
+	
+	if (newColors)
+	{
+		GLuint offset = 0,
+			size = colors.size() * sizeof(colors[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+		glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data());
+	}
 	
 	glEnableVertexAttribArray(0);
 	// 1rst attribute buffer : vertices
@@ -142,6 +153,7 @@ void Triangles::setLocation(glm::vec2 point)
 {
 	transformationMatrix[3][0] = point[0];
 	transformationMatrix[3][1] = point[1];
+	//std::cout << "Triangles::setLocation::transformationMatrix:\n" << transformationMatrix << std::endl;
 }
 
 void Triangles::setLocation(glm::vec3 point)

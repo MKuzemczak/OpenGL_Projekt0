@@ -7,7 +7,7 @@ protected:
 
 	glm::mat4 transformationMatrix;
 
-	int newVertices, newLastPoint;
+	int newVertices, newLastPoint, newColors;
 
 public:
 	Triangles();

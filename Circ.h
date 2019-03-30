@@ -13,6 +13,8 @@ public:
 	}
 	Circ(GLfloat rad, GLfloat locx, GLfloat locy, glm::vec4 clr = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
 
+	void setColor(glm::vec4 clr);
+
 	~Circ();
 };
 

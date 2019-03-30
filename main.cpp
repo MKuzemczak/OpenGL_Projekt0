@@ -37,56 +37,40 @@ int main()
 	Rect::setLocationMode(LEFT_CENTER);
 	DrawableObject::setAspectRatio(window->width(), window->height());
 
-	Rect s(0.5f, glm::vec2(-0.25f, 0.25f));
-	Rect s0(0.5f, 0.1f, glm::vec2(-0.25f, 0.75f));
-	s0.rotate(-(float)PI / 2);
-	
-	Circ c(0.01f, glm::vec2(-0.25f, 0.75f));
-	Circ c0(0.1f, glm::vec2(0.0f, 0.0f));
-	std::vector<Curve*> curves;
-	curves.push_back(new Curve(0.1f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-	curves[0]->addPoint(glm::vec2(0.5f, 0.0f));
-	curves[0]->addPoint(glm::vec2(0.0f, 0.5f));
-	curves[0]->addPoint(glm::vec2(-0.5f, 0.0f));
-	curves[0]->addPoint(glm::vec2(0.0f, -0.5f));
-	curves[0]->addPoint(glm::vec2(0.5f, 0.0f));
+	//Circ c(0.1f, 0.5f, 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
-	float rot = 0.0;
+	std::vector<Curve*> curves;
 
 	bool lastMouse = false;
 
 	do {
 		window->clear();
 
-		rot += 0.01f;
-
-		c.draw();
-		//c0.draw();
-		s0.rotate(rot);
 		if (window->isMousePressed(GLFW_MOUSE_BUTTON_LEFT))
 		{
 			if (!lastMouse)
 			{
 				lastMouse = true;
 
-				curves.push_back(new Curve(0.05f));
+				curves.push_back(new Curve(0.05f, glm::vec4(0.5f, 0.7f, 0.3f, 1.0f)));
 			}
 
-			double xpos, ypos;
-			glfwGetCursorPos(window->getGLFWWindowPtr(), &xpos, &ypos);
-			xpos = ((2 * xpos / window->width()) - 1)*window->width()/window->height();
-			ypos = (2 * (window->height() - ypos) / window->height()) - 1;
-			curves[curves.size() - 1]->addPoint(glm::vec2(xpos, ypos));
+			curves[curves.size() - 1]->addPoint(window->getCursorPos());
 		}
 		else
 			lastMouse = false;
 
+		//c.draw();
+
+		if (window->isPressed(GLFW_KEY_SPACE))
+		{
+			curves[0]->setPoint(curves[0]->pointsSize() / 2, glm::vec2(0.5f, 0.5f));
+			curves[0]->setPointColor(curves[0]->pointsSize() / 2, glm::vec3(1.0f, 0.0f, 0.0f));
+		}
+
 		for(Curve * c : curves)
 			c->draw();
 
-		//s.draw();
-		s0.draw();
-		
 		window->swapBuffers();
 	} while (!(window->isPressed(GLFW_KEY_ESCAPE)) && !(window->shouldClose()));
 

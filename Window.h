@@ -1,8 +1,8 @@
 #pragma once
 
-#define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <glm/glm.hpp>
 
 class Window
 {
@@ -22,6 +22,8 @@ public:
 	int height();
 	int width();
 	GLFWwindow * getGLFWWindowPtr();
+
+	glm::vec2 getCursorPos();
 
 	void setCursorPos(int w, int h);
 	void setBgcolor(float r, float g, float b, float a);

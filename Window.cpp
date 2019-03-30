@@ -33,14 +33,15 @@ int Window::init(int w, int h, const char * name)
 	// Open a window and create its OpenGL context
 	window = glfwCreateWindow(w, h, name, NULL, NULL);
 	if (window == NULL) {
-		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials." << std::endl;
+		std::cerr << "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version." << std::endl;
 		getchar();
 		glfwTerminate();
 		return -1;
 	}
 	glewInit();
 	glfwMakeContextCurrent(window);
-	
+
+
 	return 0;
 }
 
@@ -144,3 +145,12 @@ GLFWwindow * Window::getGLFWWindowPtr()
 	return window;
 }
 
+glm::vec2 Window::getCursorPos()
+{
+	double xpos, ypos;
+	glfwGetCursorPos(window, &xpos, &ypos);
+	xpos = ((2 * xpos / width()) - 1)*width() / height();
+	ypos = (2 * (height() - ypos) / height()) - 1;
+
+	return glm::vec2((float)xpos, (float)ypos);
+}

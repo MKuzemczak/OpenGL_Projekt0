@@ -43,6 +43,7 @@ public:
 
 	virtual void generateShaders() {}
 	virtual void draw() {}
+	virtual void setColor(glm::vec4 clr) {}
 
 	void addIndex(unsigned int i);
 	void addVertix(GLfloat v);
