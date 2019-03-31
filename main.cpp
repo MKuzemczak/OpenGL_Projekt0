@@ -41,7 +41,17 @@ int main()
 
 	std::vector<Curve*> curves;
 
-	bool lastMouse = false;
+	bool lastMouse = false,
+		startMovingLoop0 = false,
+		startMovingLoop1 = false;
+	int movingLoopCntr = 0;
+
+	std::vector<glm::vec2> p0;
+	std::vector<glm::vec2> p1;
+	std::vector<glm::vec2> vecs;
+	std::vector<float> dists;
+	float max = 0;
+	unsigned int loopLength = 100;
 
 	do {
 		window->clear();
@@ -62,10 +72,113 @@ int main()
 
 		//c.draw();
 
-		if (window->isPressed(GLFW_KEY_SPACE))
+		if (window->isPressed(GLFW_KEY_SPACE) && !startMovingLoop0 && !startMovingLoop1)
 		{
-			curves[0]->setPoint(curves[0]->pointsSize() / 2, glm::vec2(0.5f, 0.5f));
-			curves[0]->setPointColor(curves[0]->pointsSize() / 2, glm::vec3(1.0f, 0.0f, 0.0f));
+			p0 = curves[0]->getPoints();
+			p1 = curves[1]->getPoints();
+			
+
+			if (p0.size() > p1.size())
+			{
+				float coef = (float)p1.size() / p0.size();
+				for (int i = 0; i < p0.size(); i++)
+				{
+					if ((int)(i*coef) < p1.size())
+					{
+						vecs.push_back(p0[i] - p1[(int)(i*coef)]);
+						dists.push_back(glm::length(vecs[i]));
+					}
+					else
+					{
+						vecs.push_back(p0[i] - p1[p1.size() - 1]);
+						dists.push_back(glm::length(vecs[i]));
+					}
+				}
+				delete curves[1];
+				curves.pop_back();
+				startMovingLoop0 = true;
+			}
+			else
+			{
+				float coef = (float)p0.size() / p1.size();
+				for (int i = 0; i < p1.size(); i++)
+				{
+					if ((int)(i*coef) < p0.size())
+					{
+						vecs.push_back(p0[(int)i*coef] - p1[i]);
+					}
+					else
+					{
+						vecs.push_back(p0[p0.size() - 1] - p1[i]);
+					}
+				}
+				coef = 1 / coef;
+				for (int i = 0; i < p0.size(); i++)
+				{
+					if((int)i*coef < vecs.size())
+						dists.push_back(glm::length(vecs[(int)i*coef]));
+					else
+						dists.push_back(glm::length(vecs[vecs.size() - 1]));
+				}
+				startMovingLoop1 = true;
+				curves[0]->hide();
+			}
+
+			for (float d : dists)
+				if (d > max)
+					max = d;
+		}
+
+		if (startMovingLoop0 && movingLoopCntr < loopLength)
+		{
+			float coef = (float)movingLoopCntr++ / loopLength;
+
+			for (int j = 0; j < p0.size(); j++)
+			{
+				curves[0]->setPoint(j, p0[j] - (1 - coef)*vecs[j]);
+
+				if (movingLoopCntr == loopLength)
+					curves[0]->setPointColor(j, glm::vec3(pow(dists[j] / max, 4), 0.0f, 0.0f));
+			}
+
+			if (movingLoopCntr == loopLength)
+			{
+				p0.clear();
+				p1.clear();
+				vecs.clear();
+				dists.clear();
+				max = 0;
+				movingLoopCntr = 0;
+				startMovingLoop0 = false;
+			}
+		}
+
+		if (startMovingLoop1 && movingLoopCntr < loopLength)
+		{
+			float coef = (float)movingLoopCntr++ / loopLength;
+
+			for (int j = 0; j < p1.size(); j++)
+			{
+				curves[1]->setPoint(j, p1[j] + coef*vecs[j]);
+			}
+
+			if (movingLoopCntr == loopLength)
+			{
+				for (int i = 0; i < p0.size(); i++)
+				{
+					curves[0]->setPointColor(i, glm::vec3(pow(dists[i] / max, 4), 0.0f, 0.0f));
+				}
+				delete curves[1];
+				curves.pop_back();
+				p0.clear();
+				p1.clear();
+				vecs.clear();
+				dists.clear();
+				max = 0;
+				movingLoopCntr = 0;
+				startMovingLoop1 = false;
+				curves[0]->show();
+			}
 		}
 
 		for(Curve * c : curves)

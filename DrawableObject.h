@@ -36,6 +36,7 @@ protected:
 	unsigned int vertexBufferSize;
 
 	int drawingMode;
+	bool visible;
 
 public:
 	DrawableObject();
@@ -55,5 +56,7 @@ public:
 	std::vector<GLfloat> * colorsVectorPtr();
 
 	void setDrawingMode(int mode);
+	void show();
+	void hide();
 };
 

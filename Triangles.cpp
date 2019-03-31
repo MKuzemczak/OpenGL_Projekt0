@@ -78,54 +78,54 @@ void Triangles::generateShaders()
 
 void Triangles::draw()
 {
-	
-	// Use our shader
-	glUseProgram(programID);
+	if (visible)
+	{// Use our shader
+		glUseProgram(programID);
 
-	glm::mat4 mvp = orthoMatrix * transformationMatrix;
+		glm::mat4 mvp = orthoMatrix * transformationMatrix;
 
-	//std::cout << "Triangles::draw()::mvp:\n" << mvp << std::endl;
+		//std::cout << "Triangles::draw()::mvp:\n" << mvp << std::endl;
 
-	glUniformMatrix4fv(transformationMatrixID, 1, GL_FALSE, &mvp[0][0]);
-	
-	if (newColors)
-	{
-		GLuint offset = 0,
-			size = colors.size() * sizeof(colors[0]);
+		glUniformMatrix4fv(transformationMatrixID, 1, GL_FALSE, &mvp[0][0]);
+
+		if (newColors)
+		{
+			GLuint offset = 0,
+				size = colors.size() * sizeof(colors[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data());
+		}
+
+		glEnableVertexAttribArray(0);
+		// 1rst attribute buffer : vertices
+		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : colors
+		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data());
+
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			4,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+		// Draw the triangle !
+		glDrawArrays(drawingMode, 0, vertices.size() / 3);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
 	}
-	
-	glEnableVertexAttribArray(0);
-	// 1rst attribute buffer : vertices
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-	glVertexAttribPointer(
-		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	// 2nd attribute buffer : colors
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-
-	glVertexAttribPointer(
-		1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-		4,                                // size
-		GL_FLOAT,                         // type
-		GL_FALSE,                         // normalized?
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
-	// Draw the triangle !
-	glDrawArrays(drawingMode, 0, vertices.size() / 3);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	
 }
 
 void Triangles::rotate(float angle)

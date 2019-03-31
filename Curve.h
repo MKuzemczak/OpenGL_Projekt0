@@ -3,7 +3,7 @@
 #include "Circ.h"
 #include "Rect.h"
 
-class Curve : Triangles
+class Curve : public Triangles
 {
 	static GLuint programID;
 	static GLuint curveCntr;
@@ -31,6 +31,7 @@ public:
 
 	glm::vec2 & getPoint(int index);
 	const glm::vec2 & getPoint(int index) const;
+	std::vector<glm::vec2> & getPoints();
 	size_t pointsSize();
 
 };

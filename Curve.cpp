@@ -85,90 +85,92 @@ void Curve::generateShaders()
 
 void Curve::draw()
 {
-	for (Circ * c : circles)
-		c->draw();
-
-	// Use our shader
-	glUseProgram(programID);
-
-	glUniformMatrix4fv(orthoMatrixUniformID, 1, GL_FALSE, &orthoMatrix[0][0]);
-	//glUniform4fv(vertexColorUniformID, 1, &color[0]);
-	
-	
-		
-	// taking care of buffer size, doubling its size
-	while (vertices.size() > vertexBufferSize)
+	if (visible)
 	{
-		vertexBufferSize *= 2;
-		GLuint offset = 0,
-			size = vertices.size() * sizeof(vertices[0]);
+		for (Circ * c : circles)
+			c->draw();
+
+		// Use our shader
+		glUseProgram(programID);
+
+		glUniformMatrix4fv(orthoMatrixUniformID, 1, GL_FALSE, &orthoMatrix[0][0]);
+		//glUniform4fv(vertexColorUniformID, 1, &color[0]);
+
+
+
+		// taking care of buffer size, doubling its size
+		while (vertices.size() > vertexBufferSize)
+		{
+			vertexBufferSize *= 2;
+			GLuint offset = 0,
+				size = vertices.size() * sizeof(vertices[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(vertices.data()), 0, GL_STREAM_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices.data());
+			glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+			glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(colors.data()), 0, GL_STREAM_DRAW);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data());
+		}
+
+		if (updateAllVertices)
+		{
+			newVertices = vertices.size();
+			updateAllVertices = false;
+		}
+		if (newVertices)
+		{
+			GLuint offset = (vertices.size() - newVertices) * sizeof(vertices[0]),
+				size = newVertices * sizeof(vertices[0]);
+
+			glFinish();
+			glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices.data() + (offset / sizeof(vertices[0])));
+		}
+		if (updateAllColors)
+		{
+			newVertices = colors.size();
+			updateAllColors = false;
+		}
+		if (newVertices)
+		{
+			GLuint offset = (colors.size() - newVertices) * sizeof(colors[0]),
+				size = newVertices * sizeof(colors[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
+			glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data() + (offset / sizeof(colors[0])));
+			newVertices = 0;
+		}
+
+		glEnableVertexAttribArray(0);
+		// 1rst attribute buffer : vertices
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(vertices.data()), 0, GL_STREAM_DRAW);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices.data());
+
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+
+		// 2nd attribute buffer : colors
+		glEnableVertexAttribArray(1);
 		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferData(GL_ARRAY_BUFFER, vertexBufferSize * sizeof(colors.data()), 0, GL_STREAM_DRAW);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data());
+
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+		// Draw the shape !
+		glDrawArrays(drawingMode, 0, vertices.size() / 3);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
 	}
-
-	if (updateAllVertices)
-	{
-		newVertices = vertices.size();
-		updateAllVertices = false;
-	}
-	if (newVertices)
-	{
-		GLuint offset = (vertices.size() - newVertices) * sizeof(vertices[0]),
-			size = newVertices * sizeof(vertices[0]);
-
-		glFinish();
-		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, vertices.data() + (offset / sizeof(vertices[0])));
-	}
-	if (updateAllColors)
-	{
-		newVertices = colors.size();
-		updateAllColors = false;
-	}
-	if (newVertices)
-	{
-		GLuint offset = (colors.size() - newVertices) * sizeof(colors[0]),
-			size = newVertices * sizeof(colors[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-		glBufferSubData(GL_ARRAY_BUFFER, offset, size, colors.data() + (offset / sizeof(colors[0])));
-		newVertices = 0;
-	}
-	
-	glEnableVertexAttribArray(0);
-	// 1rst attribute buffer : vertices
-	glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-	glVertexAttribPointer(
-		0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-		3,                  // size
-		GL_FLOAT,           // type
-		GL_FALSE,           // normalized?
-		0,                  // stride
-		(void*)0            // array buffer offset
-	);
-
-	// 2nd attribute buffer : colors
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, colorBuffer);
-
-	glVertexAttribPointer(
-		1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-		3,                                // size
-		GL_FLOAT,                         // type
-		GL_FALSE,                         // normalized?
-		0,                                // stride
-		(void*)0                          // array buffer offset
-	);
-	// Draw the shape !
-	glDrawArrays(drawingMode, 0, vertices.size() / 3);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-
 }
 
 void Curve::addPoint(glm::vec2 pt)
@@ -181,12 +183,15 @@ void Curve::addPoint(glm::vec2 pt)
 	}
 	else
 	{
-		if (glm::length(pt - points[points.size() - 1]) >= width/2)
+		float l = glm::length(pt - points[points.size() - 1]);
+		if (l >= width/2)
 		{
 			static float prevAngle = 0;
 
 			points.push_back(pt);
 			circles[1]->setLocation(pt);
+
+			length += l;
 
 			// adding circles at some larger angles
 			/*float angle = atan(dy / dx);
@@ -240,12 +245,20 @@ void Curve::setPoint(unsigned int index, glm::vec2 loc)
 		for (int i = 0; i < v.size(); i++)
 			vertices[(index - 1) * 12 + i] = v[i];
 	}
+	else
+	{
+		circles[0]->setLocation(glm::vec3(loc, 0.0f));
+	}
 	if (index < points.size() - 1)
 	{
 		v = calculateRect(points[index], points[index + 1]);
 
 		for (int i = 0; i < v.size(); i++)
 			vertices[index * 12 + i] = v[i];
+	}
+	else
+	{
+		circles[1]->setLocation(glm::vec3(loc, 0.0f));
 	}
 
 	updateAllVertices = true;
@@ -257,7 +270,6 @@ std::vector<GLfloat> Curve::calculateRect(glm::vec2 start, glm::vec2 end)
 
 	glm::vec2 change = end - start;
 	float length = glm::length(change);
-	this->length += length;
 
 	glm::mat2 rotation;
 	rotation[0][0] = change[0] / length;
@@ -300,11 +312,24 @@ void Curve::setPointColor(unsigned int  index, glm::vec3 clr)
 		for (int i = 0; i < 6; i++)
 			colors[(index - 1) * 12 + 6 + i] = clr[i % 3];
 	}
+	else
+	{
+		circles[0]->setColor(glm::vec4(clr, 1.0f));
+	}
 	if (index < points.size() - 1)
 	{
 		for (int i = 0; i < 6; i++)
 			colors[index * 12 + i] = clr[i % 3];
 	}
+	else
+	{
+		circles[1]->setColor(glm::vec4(clr, 1.0f));
+	}
 
 	updateAllColors = true;
+}
+
+std::vector<glm::vec2> & Curve::getPoints()
+{
+	return points;
 }

@@ -17,7 +17,7 @@ DrawableObject::DrawableObject()
 	objectCntr++;
 	everCreatedObjectCntr++;
 	objectNumber = everCreatedObjectCntr;
-
+	visible = true;
 	drawingMode = GL_POINTS;
 }
 
@@ -70,4 +70,14 @@ void DrawableObject::setAspectRatio(GLuint w, GLuint h)
 {
 	GLfloat aspect = (float)w / h;
 	orthoMatrix = glm::ortho((float)-aspect, aspect, -1.0f, 1.0f);
+}
+
+void DrawableObject::show()
+{
+	visible = true;
+}
+
+void DrawableObject::hide()
+{
+	visible = false;
 }
