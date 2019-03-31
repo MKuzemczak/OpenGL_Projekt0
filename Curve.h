@@ -15,7 +15,7 @@ class Curve : Triangles
 	std::vector<glm::vec2> points;
 	std::vector<Circ *> circles;
 	glm::vec4 color;
-	float width;
+	float width,length;
 
 	std::vector<GLfloat> calculateRect(glm::vec2 start, glm::vec2 end);
 

@@ -8,6 +8,7 @@ GLuint Curve::orthoMatrixUniformID = 0;
 Curve::Curve(float w, glm::vec4 clr)
 {
 	width = w;
+	length = 0;
 	drawingMode = GL_TRIANGLE_STRIP;
 	//drawingMode = GL_LINE_LOOP;
 	curveCntr++;
@@ -256,6 +257,7 @@ std::vector<GLfloat> Curve::calculateRect(glm::vec2 start, glm::vec2 end)
 
 	glm::vec2 change = end - start;
 	float length = glm::length(change);
+	this->length += length;
 
 	glm::mat2 rotation;
 	rotation[0][0] = change[0] / length;
