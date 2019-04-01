@@ -57,6 +57,10 @@ int main()
 	Curve * standing;
 	Curve * finalCurve;
 	Curve * startingCurve;
+	std::vector<glm::vec2> movingPoints,
+		standingPoints,
+		finalCurvePoints,
+		startingCurvePoints;
 
 	do {
 		window->clear();
@@ -91,7 +95,12 @@ int main()
 			{
 				standing = finalCurve;
 				moving = startingCurve;
-			}// TODO
+			}
+
+			movingPoints = moving->getPoints();
+			standingPoints = standing->getPoints();
+			finalCurvePoints = finalCurve->getPoints();
+			startingCurvePoints = startingCurve->getPoints();
 
 			p0 = curves[0]->getPoints();
 			p1 = curves[1]->getPoints();
@@ -99,12 +108,12 @@ int main()
 
 			if (p0.size() > p1.size())
 			{
-				float coef = (float)p1.size() / p0.size();
-				for (int i = 0; i < p0.size(); i++)
+				float coef = (float)standing->getPoints().size() / moving->getPoints().size();
+				for (int i = 0; i < moving->getPoints().size(); i++)
 				{
-					if ((int)(i*coef) < p1.size())
+					if ((int)(i*coef) < standing->getPoints().size())
 					{
-						vecs.push_back(p0[i] - p1[(int)(i*coef)]);
+						vecs.push_back(finalCurvePoints - p1[(int)(i*coef)]);
 						dists.push_back(glm::length(vecs[i]));
 					}
 					else
