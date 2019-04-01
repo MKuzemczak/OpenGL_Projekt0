@@ -50,7 +50,7 @@ int main()
 	std::vector<glm::vec2> p1;
 	std::vector<glm::vec2> vecs;
 	std::vector<float> dists;
-	float max = 0;
+	float max = 0.5;
 	unsigned int loopLength = 100;
 
 	do {
@@ -72,7 +72,7 @@ int main()
 
 		//c.draw();
 
-		if (window->isPressed(GLFW_KEY_SPACE) && !startMovingLoop0 && !startMovingLoop1)
+		if (window->isPressed(GLFW_KEY_SPACE) && !startMovingLoop0 && !startMovingLoop1 && curves.size() == 2)
 		{
 			p0 = curves[0]->getPoints();
 			p1 = curves[1]->getPoints();
@@ -124,9 +124,20 @@ int main()
 				curves[0]->hide();
 			}
 
-			for (float d : dists)
-				if (d > max)
-					max = d;
+			for (int i = 0; i < dists.size(); i++)
+				if (dists[i] > max)
+				{
+					startMovingLoop0 = false;
+					startMovingLoop1 = false;
+					delete curves[1];
+					curves.pop_back();
+					curves[0]->show();
+					p0.clear();
+					p1.clear();
+					vecs.clear();
+					dists.clear();
+					break;
+				}
 		}
 
 		if (startMovingLoop0 && movingLoopCntr < loopLength)
@@ -138,7 +149,7 @@ int main()
 				curves[0]->setPoint(j, p0[j] - (1 - coef)*vecs[j]);
 
 				if (movingLoopCntr == loopLength)
-					curves[0]->setPointColor(j, glm::vec3(pow(dists[j] / max, 4), 0.0f, 0.0f));
+					curves[0]->setPointColor(j, glm::vec3(pow(dists[j] / max, 3), 0.0f, 0.0f));
 			}
 
 			if (movingLoopCntr == loopLength)
@@ -147,7 +158,6 @@ int main()
 				p1.clear();
 				vecs.clear();
 				dists.clear();
-				max = 0;
 				movingLoopCntr = 0;
 				startMovingLoop0 = false;
 			}
@@ -166,7 +176,7 @@ int main()
 			{
 				for (int i = 0; i < p0.size(); i++)
 				{
-					curves[0]->setPointColor(i, glm::vec3(pow(dists[i] / max, 4), 0.0f, 0.0f));
+					curves[0]->setPointColor(i, glm::vec3(pow(dists[i] / max, 3), 0.0f, 0.0f));
 				}
 				delete curves[1];
 				curves.pop_back();
@@ -174,7 +184,6 @@ int main()
 				p1.clear();
 				vecs.clear();
 				dists.clear();
-				max = 0;
 				movingLoopCntr = 0;
 				startMovingLoop1 = false;
 				curves[0]->show();
