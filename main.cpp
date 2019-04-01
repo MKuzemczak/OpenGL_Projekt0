@@ -53,6 +53,11 @@ int main()
 	float max = 0.5;
 	unsigned int loopLength = 100;
 
+	Curve * moving;
+	Curve * standing;
+	Curve * finalCurve;
+	Curve * startingCurve;
+
 	do {
 		window->clear();
 
@@ -74,6 +79,20 @@ int main()
 
 		if (window->isPressed(GLFW_KEY_SPACE) && !startMovingLoop0 && !startMovingLoop1 && curves.size() == 2)
 		{
+			finalCurve = curves[0];
+			startingCurve = curves[1];
+
+			if (finalCurve->getPoints().size() > startingCurve->getPoints().size())
+			{
+				moving = finalCurve;
+				standing = startingCurve;
+			}
+			else
+			{
+				standing = finalCurve;
+				moving = startingCurve;
+			}// TODO
+
 			p0 = curves[0]->getPoints();
 			p1 = curves[1]->getPoints();
 			
