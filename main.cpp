@@ -42,7 +42,8 @@ int main()
 	std::vector<Curve*> curves;
 
 	bool lastMouse = false,
-		startMovingLoop = false;
+		startMovingLoop = false,
+		doCalculations = false;
 	int movingLoopCntr = 0;
 
 	std::vector<glm::vec2> vecs;
@@ -73,12 +74,16 @@ int main()
 
 			curves[curves.size() - 1]->addPoint(window->getCursorPos());
 		}
-		else
+		else if (lastMouse)
+		{
 			lastMouse = false;
+			if (curves.size() == 2)
+				doCalculations = true;
+		}
 
 		//c.draw();
 
-		if (window->isPressed(GLFW_KEY_SPACE) && !startMovingLoop && curves.size() == 2)
+		if (doCalculations && !startMovingLoop && curves.size() == 2)
 		{
 			finalCurve = curves[0];
 			startingCurve = curves[1];
@@ -98,23 +103,23 @@ int main()
 			standingPoints = standing->getPoints();
 			finalCurvePoints = finalCurve->getPoints();
 			startingCurvePoints = startingCurve->getPoints();
+
+			std::cout << "sizes: " << movingPoints.size() << ", "
+				<< standingPoints.size() << ", "
+				<< finalCurvePoints.size() << ", "
+				<< startingCurvePoints.size() << std::endl;
 			
 			float coef = (float)standingPoints.size() / movingPoints.size();
 			for (int i = 0; i < moving->getPoints().size(); i++)
 			{
 					vecs.push_back(finalCurvePoints[i*finalCurvePoints.size() / movingPoints.size()] - 
 						startingCurvePoints[i*startingCurvePoints.size() / movingPoints.size()]);
-					moving->setPoint(i, startingCurvePoints[i*startingCurvePoints.size() / movingPoints.size()]);
-				
 			}
 			for (int i = 0; i < finalCurvePoints.size(); i++)
 			{
 				dists.push_back(glm::length(vecs[i*movingPoints.size() / finalCurvePoints.size()]));
 			}
 
-			standing->hide();
-			moving->show();
-			movingPoints = moving->getPoints();
 			startMovingLoop = true;
 
 			for (int i = 0; i < dists.size(); i++)
@@ -126,8 +131,22 @@ int main()
 					curves[0]->show();
 					vecs.clear();
 					dists.clear();
+					moving = NULL;
+					standing = NULL;
+					finalCurve = NULL;
+					startingCurve = NULL;
 					break;
 				}
+
+			if (startMovingLoop)
+			{
+				for (int i = 0; i < moving->getPoints().size(); i++)
+					moving->setPoint(i, startingCurvePoints[i*startingCurvePoints.size() / movingPoints.size()]);
+				movingPoints = moving->getPoints();
+				standing->hide();
+				moving->show();
+			}
+			doCalculations = false;
 		}
 
 		if (startMovingLoop && movingLoopCntr < loopLength)
@@ -142,7 +161,7 @@ int main()
 			if (movingLoopCntr == loopLength)
 			{
 				for (int i = 0; i < finalCurvePoints.size(); i++)
-					finalCurve->setPointColor(i, glm::vec3(pow(dists[i] / max, 3), 0.0f, 0.0f));
+					finalCurve->setPointColor(i, glm::vec3(pow(dists[i] / max, 2), 0.0f, 0.0f));
 				vecs.clear();
 				dists.clear();
 				finalCurve->show();
@@ -150,8 +169,18 @@ int main()
 				curves.pop_back();
 				movingLoopCntr = 0;
 				startMovingLoop = false;
+				moving = NULL;
+				standing = NULL;
+				finalCurve = NULL;
+				startingCurve = NULL;
+				std::cout << "sizes: " << movingPoints.size() << ", "
+					<< standingPoints.size() << ", "
+					<< finalCurvePoints.size() << ", "
+					<< startingCurvePoints.size() << std::endl;
 			}
 		}
+
+
 
 		for(Curve * c : curves)
 			c->draw();
