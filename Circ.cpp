@@ -31,7 +31,7 @@ Circ::Circ(GLfloat rad, GLfloat locx, GLfloat locy, glm::vec4 clr)
 	color[1] = clr[1];
 	color[2] = clr[2];
 	color[3] = clr[3];
-	for (int i = 0; i < vertices.size() / 3; i++)
+	for (unsigned int i = 0; i < vertices.size() / 3; i++)
 	{
 		colors.push_back(color[0]);
 		colors.push_back(color[1]);
@@ -52,7 +52,7 @@ Circ::~Circ()
 void Circ::setColor(glm::vec4 clr)
 {
 	color = clr;
-	for (int i = 0; i < vertices.size() / 3; i++)
+	for (unsigned int i = 0; i < vertices.size() / 3; i++)
 	{
 		colors[i * 4 + 0] = color[0];
 		colors[i * 4 + 1] = color[1];

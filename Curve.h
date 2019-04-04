@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CURVE_H
+#define CURVE_H
 
 #include "Circ.h"
 #include "Rect.h"
@@ -35,3 +36,5 @@ public:
 	size_t pointsSize();
 
 };
+
+#endif

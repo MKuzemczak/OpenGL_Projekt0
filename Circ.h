@@ -1,4 +1,6 @@
-#pragma once
+#ifndef CIRC_H
+#define CIRC_H
+
 #include "Triangles.h"
 class Circ : public Triangles
 {
@@ -18,3 +20,4 @@ public:
 	~Circ();
 };
 
+#endif

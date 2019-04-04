@@ -25,7 +25,7 @@ Triangles::~Triangles()
 
 void Triangles::generateShaders()
 {
-	if (programID == NULL)
+	if (programID == 0)
 	{
 		std::ofstream vertexShader, fragmentShader;
 		vertexShaderFileName.append("object");

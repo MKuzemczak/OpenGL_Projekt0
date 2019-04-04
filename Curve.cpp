@@ -186,7 +186,7 @@ void Curve::addPoint(glm::vec2 pt)
 		float l = glm::length(pt - points[points.size() - 1]);
 		if (l >= width/2)
 		{
-			static float prevAngle = 0;
+			//static float prevAngle = 0;
 
 			points.push_back(pt);
 			circles[1]->setLocation(pt);
@@ -242,7 +242,7 @@ void Curve::setPoint(unsigned int index, glm::vec2 loc)
 	{
 		v = calculateRect(points[index - 1], points[index]);
 
-		for (int i = 0; i < v.size(); i++)
+		for (unsigned int i = 0; i < v.size(); i++)
 			vertices[(index - 1) * 12 + i] = v[i];
 	}
 	else
@@ -253,7 +253,7 @@ void Curve::setPoint(unsigned int index, glm::vec2 loc)
 	{
 		v = calculateRect(points[index], points[index + 1]);
 
-		for (int i = 0; i < v.size(); i++)
+		for (unsigned int i = 0; i < v.size(); i++)
 			vertices[index * 12 + i] = v[i];
 	}
 	else

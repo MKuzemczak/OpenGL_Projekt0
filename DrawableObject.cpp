@@ -3,7 +3,7 @@
 unsigned int DrawableObject::objectCntr = 0;
 unsigned int DrawableObject::everCreatedObjectCntr = 0;
 GLuint DrawableObject::VertexArrayID;
-GLuint DrawableObject::programID = NULL;
+GLuint DrawableObject::programID = 0;
 glm::mat4 DrawableObject::orthoMatrix = glm::mat4(1.0f);
 
 DrawableObject::DrawableObject()

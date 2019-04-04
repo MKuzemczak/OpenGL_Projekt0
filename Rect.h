@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RECT_H
+#define RECT_H
 #include "Triangles.h"
 
 enum LocMode
@@ -34,3 +35,4 @@ public:
 	~Rect();
 };
 
+#endif

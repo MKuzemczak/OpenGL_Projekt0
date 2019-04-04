@@ -44,12 +44,12 @@ int main()
 	bool lastMouse = false,
 		startMovingLoop = false,
 		doCalculations = false;
-	int movingLoopCntr = 0;
 
 	std::vector<glm::vec2> vecs;
 	std::vector<float> dists;
 	float max = 0.5;
-	unsigned int loopLength = 100;
+	unsigned int loopLength = 100,
+		movingLoopCntr = 0;
 
 	Curve * moving = NULL;
 	Curve * standing = NULL;
@@ -103,26 +103,20 @@ int main()
 			standingPoints = standing->getPoints();
 			finalCurvePoints = finalCurve->getPoints();
 			startingCurvePoints = startingCurve->getPoints();
-
-			std::cout << "sizes: " << movingPoints.size() << ", "
-				<< standingPoints.size() << ", "
-				<< finalCurvePoints.size() << ", "
-				<< startingCurvePoints.size() << std::endl;
 			
-			float coef = (float)standingPoints.size() / movingPoints.size();
-			for (int i = 0; i < moving->getPoints().size(); i++)
+			for (unsigned int i = 0; i < moving->getPoints().size(); i++)
 			{
 					vecs.push_back(finalCurvePoints[i*finalCurvePoints.size() / movingPoints.size()] - 
 						startingCurvePoints[i*startingCurvePoints.size() / movingPoints.size()]);
 			}
-			for (int i = 0; i < finalCurvePoints.size(); i++)
+			for (unsigned int i = 0; i < finalCurvePoints.size(); i++)
 			{
 				dists.push_back(glm::length(vecs[i*movingPoints.size() / finalCurvePoints.size()]));
 			}
 
 			startMovingLoop = true;
 
-			for (int i = 0; i < dists.size(); i++)
+			for (unsigned int i = 0; i < dists.size(); i++)
 				if (dists[i] > max)
 				{
 					startMovingLoop = false;
@@ -140,7 +134,7 @@ int main()
 
 			if (startMovingLoop)
 			{
-				for (int i = 0; i < moving->getPoints().size(); i++)
+				for (unsigned int i = 0; i < moving->getPoints().size(); i++)
 					moving->setPoint(i, startingCurvePoints[i*startingCurvePoints.size() / movingPoints.size()]);
 				movingPoints = moving->getPoints();
 				standing->hide();
@@ -153,14 +147,14 @@ int main()
 		{
 			float coef = (float)movingLoopCntr++ / loopLength;
 
-			for (int j = 0; j < movingPoints.size(); j++)
+			for (unsigned int j = 0; j < movingPoints.size(); j++)
 			{
 				moving->setPoint(j, movingPoints[j] + coef * vecs[j]);
 			}
 
 			if (movingLoopCntr == loopLength)
 			{
-				for (int i = 0; i < finalCurvePoints.size(); i++)
+				for (unsigned int i = 0; i < finalCurvePoints.size(); i++)
 					finalCurve->setPointColor(i, glm::vec3(pow(dists[i] / max, 2), 0.0f, 0.0f));
 				vecs.clear();
 				dists.clear();
@@ -173,14 +167,8 @@ int main()
 				standing = NULL;
 				finalCurve = NULL;
 				startingCurve = NULL;
-				std::cout << "sizes: " << movingPoints.size() << ", "
-					<< standingPoints.size() << ", "
-					<< finalCurvePoints.size() << ", "
-					<< startingCurvePoints.size() << std::endl;
 			}
 		}
-
-
 
 		for(Curve * c : curves)
 			c->draw();

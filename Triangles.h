@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TRIANGLES_H
+#define TRIANGLES_H
 #include "DrawableObject.h"
 class Triangles : public DrawableObject
 {
@@ -21,4 +22,4 @@ public:
 	void setLocation(glm::vec2 point);
 	void setLocation(glm::vec3 point);
 };
-
+#endif
