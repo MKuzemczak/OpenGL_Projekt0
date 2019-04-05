@@ -2,8 +2,6 @@
 
 #include "Triangles.h"
 
-GLuint Triangles::transformationMatrixID;
-
 Triangles::Triangles()
 {
 	transformationMatrix = glm::mat4(1.0f);
@@ -126,39 +124,4 @@ void Triangles::draw()
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
 	}
-}
-
-void Triangles::rotate(float angle)
-{
-	transformationMatrix[0][0] = cos(angle);
-	transformationMatrix[1][0] = -sin(angle);
-	transformationMatrix[0][1] = sin(angle);
-	transformationMatrix[1][1] = transformationMatrix[0][0];
-}
-
-void Triangles::move(glm::vec2 vec)
-{
-	transformationMatrix[3][0] += vec[0];
-	transformationMatrix[3][1] += vec[1];
-}
-
-void Triangles::move(glm::vec3 vec)
-{
-	transformationMatrix[3][0] += vec[0];
-	transformationMatrix[3][1] += vec[1];
-	transformationMatrix[3][2] += vec[2];
-}
-
-void Triangles::setLocation(glm::vec2 point)
-{
-	transformationMatrix[3][0] = point[0];
-	transformationMatrix[3][1] = point[1];
-	//std::cout << "Triangles::setLocation::transformationMatrix:\n" << transformationMatrix << std::endl;
-}
-
-void Triangles::setLocation(glm::vec3 point)
-{
-	transformationMatrix[3][0] = point[0];
-	transformationMatrix[3][1] = point[1];
-	transformationMatrix[3][2] = point[2];
 }

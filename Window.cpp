@@ -41,6 +41,8 @@ int Window::init(int w, int h, const char * name)
 	glewInit();
 	glfwMakeContextCurrent(window);
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	return 0;
 }
@@ -149,8 +151,5 @@ glm::vec2 Window::getCursorPos()
 {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
-	xpos = ((2 * xpos / width()) - 1)*width() / height();
-	ypos = (2 * (height() - ypos) / height()) - 1;
-
-	return glm::vec2((float)xpos, (float)ypos);
+	return glm::vec2((float)xpos, (float)height()-ypos);
 }

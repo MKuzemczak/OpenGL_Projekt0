@@ -4,6 +4,7 @@ unsigned int DrawableObject::objectCntr = 0;
 unsigned int DrawableObject::everCreatedObjectCntr = 0;
 GLuint DrawableObject::VertexArrayID;
 GLuint DrawableObject::programID = 0;
+GLuint DrawableObject::transformationMatrixID = 0;
 glm::mat4 DrawableObject::orthoMatrix = glm::mat4(1.0f);
 
 DrawableObject::DrawableObject()
@@ -66,10 +67,9 @@ void DrawableObject::setDrawingMode(int mode)
 	drawingMode = mode;
 }
 
-void DrawableObject::setAspectRatio(GLuint w, GLuint h)
+void DrawableObject::setAspectRatio(GLfloat w, GLfloat h)
 {
-	GLfloat aspect = (float)w / h;
-	orthoMatrix = glm::ortho((float)-aspect, aspect, -1.0f, 1.0f);
+	orthoMatrix = glm::ortho(0.0f, w, 0.0f, h);
 }
 
 void DrawableObject::show()
@@ -80,4 +80,38 @@ void DrawableObject::show()
 void DrawableObject::hide()
 {
 	visible = false;
+}
+
+void DrawableObject::rotate(float angle)
+{
+	transformationMatrix[0][0] = cos(angle);
+	transformationMatrix[1][0] = -sin(angle);
+	transformationMatrix[0][1] = sin(angle);
+	transformationMatrix[1][1] = transformationMatrix[0][0];
+}
+
+void DrawableObject::move(glm::vec2 vec)
+{
+	transformationMatrix[3][0] += vec[0];
+	transformationMatrix[3][1] += vec[1];
+}
+
+void DrawableObject::move(glm::vec3 vec)
+{
+	transformationMatrix[3][0] += vec[0];
+	transformationMatrix[3][1] += vec[1];
+	transformationMatrix[3][2] += vec[2];
+}
+
+void DrawableObject::setLocation(glm::vec2 point)
+{
+	transformationMatrix[3][0] = point[0];
+	transformationMatrix[3][1] = point[1];
+}
+
+void DrawableObject::setLocation(glm::vec3 point)
+{
+	transformationMatrix[3][0] = point[0];
+	transformationMatrix[3][1] = point[1];
+	transformationMatrix[3][2] = point[2];
 }

@@ -21,6 +21,7 @@ class DrawableObject
 protected:
 	static GLuint VertexArrayID;
 	static GLuint programID;
+	static GLuint transformationMatrixID;
 	static unsigned int objectCntr;
 	static unsigned int everCreatedObjectCntr;
 	static glm::mat4 orthoMatrix;
@@ -28,6 +29,7 @@ protected:
 	std::vector<unsigned int> indices;
 	std::vector<GLfloat> vertices,
 		colors;
+	glm::mat4 transformationMatrix;
 
 	std::string vertexShaderFileName,
 		fragmentShaderFileName;
@@ -49,7 +51,13 @@ public:
 	void addIndex(unsigned int i);
 	void addVertix(GLfloat v);
 	void addColor(GLfloat c);
-	static void setAspectRatio(GLuint w, GLuint h);
+	static void setAspectRatio(GLfloat w, GLfloat h);
+
+	void rotate(float angle);
+	void move(glm::vec2 vec);
+	void move(glm::vec3 vec);
+	void setLocation(glm::vec2 point);
+	void setLocation(glm::vec3 point);
 
 	std::vector<unsigned int> * indicesVectorPtr();
 	std::vector<GLfloat> * verticesVectorPtr();

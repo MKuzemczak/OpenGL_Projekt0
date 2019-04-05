@@ -1,4 +1,6 @@
 #include <iostream>
+#include <map>
+#include <chrono>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -10,12 +12,13 @@
 #include "Curve.h"
 #include "shader.hpp"
 #include "texture.hpp"
+#include "Text.h"
 
 Window * window;
 
 using namespace glm;
 
-
+typedef std::chrono::high_resolution_clock Clock;
 
 int main()
 {
@@ -47,7 +50,7 @@ int main()
 
 	std::vector<glm::vec2> vecs;
 	std::vector<float> dists;
-	float max = 0.5;
+	float max = window->height()/2;
 	unsigned int loopLength = 100,
 		movingLoopCntr = 0;
 
@@ -60,6 +63,14 @@ int main()
 		finalCurvePoints,
 		startingCurvePoints;
 
+	Text text("hehehello", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	text.setLocation(glm::vec2(10.0f, 542.0f));
+	text.generateShaders();
+	text.loadFont("fonts/arial.ttf", 48);
+
+	auto prevTime = Clock::now();
+	auto time = prevTime;
+
 	do {
 		window->clear();
 
@@ -69,7 +80,7 @@ int main()
 			{
 				lastMouse = true;
 
-				curves.push_back(new Curve(0.05f, glm::vec4(0.5f, 0.7f, 0.3f, 1.0f)));
+				curves.push_back(new Curve(10.0f, glm::vec4(0.5f, 0.7f, 0.3f, 1.0f)));
 			}
 
 			curves[curves.size() - 1]->addPoint(window->getCursorPos());
@@ -172,6 +183,13 @@ int main()
 
 		for(Curve * c : curves)
 			c->draw();
+
+		time = Clock::now();
+		double interval = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(time - prevTime).count());
+		int fps = 1 / (interval / 1000000);
+		prevTime = time;
+		text.setText(std::to_string(fps));
+		text.draw();
 
 		window->swapBuffers();
 	} while (!(window->isPressed(GLFW_KEY_ESCAPE)) && !(window->shouldClose()));
