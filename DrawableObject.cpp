@@ -69,7 +69,12 @@ void DrawableObject::setDrawingMode(int mode)
 
 void DrawableObject::setAspectRatio(GLfloat w, GLfloat h)
 {
-	orthoMatrix = glm::ortho(0.0f, w, 0.0f, h);
+	orthoMatrix = glm::ortho(0.0f, w, 0.0f, h); // new version
+
+	// old version
+	/*GLfloat aspect = w / h;
+	orthoMatrix = glm::ortho(-aspect, aspect, -1.0f, 1.0f);
+	orthoMatrix = glm::ortho(0.0f, w, 0.0f, h);*/
 }
 
 void DrawableObject::show()

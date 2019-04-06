@@ -77,7 +77,8 @@ void Triangles::generateShaders()
 void Triangles::draw()
 {
 	if (visible)
-	{// Use our shader
+	{
+		// Use our shader
 		glUseProgram(programID);
 
 		glm::mat4 mvp = orthoMatrix * transformationMatrix;

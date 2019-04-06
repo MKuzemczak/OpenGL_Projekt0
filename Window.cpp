@@ -151,5 +151,12 @@ glm::vec2 Window::getCursorPos()
 {
 	double xpos, ypos;
 	glfwGetCursorPos(window, &xpos, &ypos);
+
+	// old version
+	/*xpos = ((2 * xpos / width()) - 1)*width() / height();
+	ypos = (2 * (height() - ypos) / height()) - 1;
+	return glm::vec2((float)xpos, (float)ypos);*/
+
+	// new version
 	return glm::vec2((float)xpos, (float)height()-ypos);
 }

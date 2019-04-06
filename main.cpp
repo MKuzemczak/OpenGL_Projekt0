@@ -40,8 +40,8 @@ int main()
 	Rect::setLocationMode(LEFT_CENTER);
 	DrawableObject::setAspectRatio(window->width(), window->height());
 
-	//Circ c(0.1f, 0.5f, 0.5f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-
+	Circ c(20.0f, 400.0f, 300.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	Rect r(30.0f, 20.0f, 200.0f, 200.0f, 0.0f);
 	std::vector<Curve*> curves;
 
 	bool lastMouse = false,
@@ -92,7 +92,8 @@ int main()
 				doCalculations = true;
 		}
 
-		//c.draw();
+		c.draw();
+		r.draw();
 
 		if (doCalculations && !startMovingLoop && curves.size() == 2)
 		{

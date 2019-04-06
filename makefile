@@ -2,20 +2,21 @@ CC=g++
 CPPFLAGS=-Wall -pedantic
 HPATH=./
 SRCPATH=./
-OBJPATH=./
-LIBS=-lGLEW -lglfw -lGL
+OBJPATH=./obj/
+LIBS=-lGLEW -lglfw -lGL -lfreetype
 
 __start__: program.out
 	./program.out
 
 program.out: $(OBJPATH)main.o $(OBJPATH)Window.o $(OBJPATH)DrawableObject.o \
 				$(OBJPATH)Triangles.o $(OBJPATH)Rect.o $(OBJPATH)Circ.o \
-				$(OBJPATH)Curve.o $(OBJPATH)shader.o
+				$(OBJPATH)Curve.o $(OBJPATH)shader.o $(OBJPATH)Text.o
 	$(CC) -o $@ $^ $(LIBS)
 
 $(OBJPATH)main.o: $(SRCPATH)main.cpp $(HPATH)Window.h $(HPATH)Rect.h \
-					$(HPATH)Circ.h $(HPATH)Curve.h $(HPATH)shader.hpp $(HPATH)texture.hpp
-	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS)
+					$(HPATH)Circ.h $(HPATH)Curve.h $(HPATH)shader.hpp \
+					$(HPATH)texture.hpp $(HPATH)Text.h
+	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS) -I/usr/include/freetype2 -I/usr/include/libpng16
 
 $(OBJPATH)Window.o: $(SRCPATH)Window.cpp $(HPATH)Window.h
 	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS)
@@ -36,6 +37,9 @@ $(OBJPATH)Circ.o: $(SRCPATH)Circ.cpp $(HPATH)Circ.h $(HPATH)Triangles.h
 
 $(OBJPATH)Curve.o: $(SRCPATH)Curve.cpp $(HPATH)Curve.h $(HPATH)Rect.h $(HPATH)Circ.h
 	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS)
+
+$(OBJPATH)Text.o: $(SRCPATH)Text.cpp $(HPATH)Text.h $(HPATH)DrawableObject.h
+	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS) -I/usr/include/freetype2 -I/usr/include/libpng16
 
 $(OBJPATH)shader.o: $(SRCPATH)shader.cpp $(SRCPATH)shader.hpp
 	$(CC) -c -o $@ $< $(CPPFLAGS) $(LIBS)
