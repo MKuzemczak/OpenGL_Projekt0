@@ -58,9 +58,9 @@ void Curve::generateShaders()
 		fragmentShader
 			<< "#version 330 core\n\n"
 			<< "in vec3 fragmentColor;"
-			<< "out vec3 color;\n\n"
+			<< "out vec4 color;\n\n"
 			<< "void main() {\n"
-			<< "\tcolor = fragmentColor;"
+			<< "\tcolor = vec4(fragmentColor, 1.0f);"
 			<< "}";
 		fragmentShader.close();
 
