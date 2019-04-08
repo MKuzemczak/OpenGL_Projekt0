@@ -162,7 +162,7 @@ void Text::draw()
 		};
 
 		// Render glyph texture over quad
-		//glBindTexture(GL_TEXTURE_2D, ch.TextureID);
+		glBindTexture(GL_TEXTURE_2D, ch.TextureID);
 		// Update content of VBO memory
 		glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * sizeof(GLfloat), vertices.data());
