@@ -63,8 +63,8 @@ int main()
 		finalCurvePoints,
 		startingCurvePoints;
 
-	Text text("hehehello", glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	text.setLocation(glm::vec2(10.0f, 542.0f));
+	Text text("hehehello", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	text.setLocation(glm::vec2(0.0f, 0.0f));
 	text.generateShaders();
 	text.loadFont("fonts/arial.ttf", 48);
 
@@ -185,12 +185,15 @@ int main()
 		for(Curve * c : curves)
 			c->draw();
 
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		time = Clock::now();
 		double interval = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(time - prevTime).count());
 		int fps = 1 / (interval / 1000000);
 		prevTime = time;
 		text.setText(std::to_string(fps));
 		text.draw();
+		//glDisable(GL_BLEND);
 
 		window->swapBuffers();
 	} while (!(window->isPressed(GLFW_KEY_ESCAPE)) && !(window->shouldClose()));
