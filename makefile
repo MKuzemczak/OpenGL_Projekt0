@@ -1,7 +1,7 @@
 CC=g++
 CPPFLAGS=-Wall -pedantic
-HPATH=./
-SRCPATH=./
+HPATH=./header/
+SRCPATH=./src/
 OBJPATH=./obj/
 LIBS=-lGLEW -lglfw -lGL -lfreetype
 
